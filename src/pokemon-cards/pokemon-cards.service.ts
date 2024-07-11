@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
 import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
@@ -30,19 +31,23 @@ export class PokemonCardsService {
   }
 
   findAll() {
-    return `This action returns all pokemonCards`;
+    return this.pokeCardRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pokemonCard`;
+  async findOne(id: string) {
+    const pokeCard = await this.pokeCardRepository.findOneBy({ id });
+    if (!pokeCard)
+      throw new NotFoundException(`The card wit id ${id} not found`);
+    return pokeCard;
   }
 
   update(id: number, updatePokemonCardDto: UpdatePokemonCardDto) {
     return `This action updates a #${id} pokemonCard`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pokemonCard`;
+  async remove(id: string) {
+    const pokeCard = this.findOne(id);
+    await this.pokeCardRepository.delete({ id });
   }
 
   private handleDBExceptions(error: any) {

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { PokemonCardsService } from './pokemon-cards.service';
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
@@ -26,8 +27,8 @@ export class PokemonCardsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pokemonCardsService.findOne(+id);
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.pokemonCardsService.findOne(id);
   }
 
   @Patch(':id')
@@ -39,7 +40,7 @@ export class PokemonCardsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pokemonCardsService.remove(+id);
+  remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.pokemonCardsService.remove(id);
   }
 }

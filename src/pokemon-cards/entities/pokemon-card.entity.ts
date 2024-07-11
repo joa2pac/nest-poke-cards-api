@@ -20,17 +20,17 @@ export class PokemonCard {
   @Column('text')
   type: string;
 
-  @Column('numeric', {
+  @Column('float', {
     default: 1,
   })
   hp: number;
 
-  @Column('numeric', {
+  @Column('float', {
     default: 1,
   })
   attack: number;
 
-  @Column('numeric', {
+  @Column('float', {
     default: 1,
   })
   defense: number;

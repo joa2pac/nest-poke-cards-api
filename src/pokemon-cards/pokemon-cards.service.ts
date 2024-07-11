@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
 import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +12,8 @@ import { PokemonCard } from './entities/pokemon-card.entity';
 
 @Injectable()
 export class PokemonCardsService {
+  private readonly logger = new Logger('PokemonCardsService');
+
   constructor(
     @InjectRepository(PokemonCard)
     private readonly pokeCardRepository: Repository<PokemonCard>,
@@ -18,10 +25,7 @@ export class PokemonCardsService {
       await this.pokeCardRepository.save(pokemonCard);
       return pokemonCard;
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException(
-        'Ops, algo salio tremendamente bad',
-      );
+      this.handleDBExceptions(error);
     }
   }
 
@@ -39,5 +43,14 @@ export class PokemonCardsService {
 
   remove(id: number) {
     return `This action removes a #${id} pokemonCard`;
+  }
+
+  private handleDBExceptions(error: any) {
+    if (error.code === '23505') throw new BadRequestException(error.detail);
+
+    this.logger.error(error);
+    throw new InternalServerErrorException(
+      'Unexpected error, checkk server logs',
+    );
   }
 }

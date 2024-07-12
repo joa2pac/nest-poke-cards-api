@@ -7,10 +7,12 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { PokemonCardsService } from './pokemon-cards.service';
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
 import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('pokemon-card')
 export class PokemonCardsController {
@@ -22,8 +24,8 @@ export class PokemonCardsController {
   }
 
   @Get()
-  findAll() {
-    return this.pokemonCardsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.pokemonCardsService.findAll(paginationDto);
   }
 
   @Get(':id')

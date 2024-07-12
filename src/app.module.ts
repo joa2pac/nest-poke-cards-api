@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PokemonCardsModule } from './pokemon-cards/pokemon-cards.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PokemonCardsModule } from './pokemon-cards/pokemon-cards.module';
       synchronize: true,
     }),
     PokemonCardsModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],

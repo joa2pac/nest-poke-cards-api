@@ -10,6 +10,7 @@ import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PokemonCard } from './entities/pokemon-card.entity';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class PokemonCardsService {
@@ -30,8 +31,13 @@ export class PokemonCardsService {
     }
   }
 
-  findAll() {
-    return this.pokeCardRepository.find();
+  findAll(paginationDto: PaginationDto) {
+    const { limit = 5, offset = 0 } = paginationDto;
+
+    return this.pokeCardRepository.find({
+      take: limit,
+      skip: offset,
+    });
   }
 
   async findOne(id: string) {

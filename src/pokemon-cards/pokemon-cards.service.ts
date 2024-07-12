@@ -18,12 +18,19 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 export class PokemonCardsService {
   private readonly logger = new Logger('PokemonCardsService');
 
+  private capitalizeFirstLetter(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   constructor(
     @InjectRepository(PokemonCard)
     private readonly pokeCardRepository: Repository<PokemonCard>,
   ) {}
 
   async create(createPokemonCardDto: CreatePokemonCardDto) {
+    createPokemonCardDto.name = this.capitalizeFirstLetter(
+      createPokemonCardDto.name,
+    );
     try {
       const pokemonCard = this.pokeCardRepository.create(createPokemonCardDto);
       await this.pokeCardRepository.save(pokemonCard);
@@ -48,7 +55,12 @@ export class PokemonCardsService {
     if (isUUID(term)) {
       pokemonCard = await this.pokeCardRepository.findOneBy({ id: term });
     } else {
-      pokemonCard = await this.pokeCardRepository.findOneBy({ name: term });
+      const queryBuilder = this.pokeCardRepository.createQueryBuilder();
+      pokemonCard = await queryBuilder
+        .where('UPPER(name) =:name', {
+          name: term.toUpperCase(),
+        })
+        .getOne();
     }
 
     if (!pokemonCard)

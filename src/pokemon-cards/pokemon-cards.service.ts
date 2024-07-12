@@ -68,8 +68,20 @@ export class PokemonCardsService {
     return pokemonCard;
   }
 
-  update(id: number, updatePokemonCardDto: UpdatePokemonCardDto) {
-    return `This action updates a #${id} pokemonCard`;
+  async update(id: string, updatePokemonCardDto: UpdatePokemonCardDto) {
+    const pokemonCard = await this.pokeCardRepository.preload({
+      id: id,
+      ...updatePokemonCardDto,
+    });
+
+    if (!pokemonCard)
+      throw new NotFoundException(`Pokemon Card with id: ${id} not found`);
+    try {
+      await this.pokeCardRepository.save(pokemonCard);
+      return pokemonCard;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   async remove(id: string) {

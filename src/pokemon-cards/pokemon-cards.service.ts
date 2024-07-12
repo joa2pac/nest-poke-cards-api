@@ -5,10 +5,12 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { validate as isUUID } from 'uuid';
+
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
 import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { PokemonCard } from './entities/pokemon-card.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
@@ -40,11 +42,18 @@ export class PokemonCardsService {
     });
   }
 
-  async findOne(id: string) {
-    const pokeCard = await this.pokeCardRepository.findOneBy({ id });
-    if (!pokeCard)
-      throw new NotFoundException(`The card wit id ${id} not found`);
-    return pokeCard;
+  async findOne(term: string) {
+    let pokemonCard: PokemonCard;
+
+    if (isUUID(term)) {
+      pokemonCard = await this.pokeCardRepository.findOneBy({ id: term });
+    } else {
+      pokemonCard = await this.pokeCardRepository.findOneBy({ name: term });
+    }
+
+    if (!pokemonCard)
+      throw new NotFoundException(`The card wit id ${term} not found`);
+    return pokemonCard;
   }
 
   update(id: number, updatePokemonCardDto: UpdatePokemonCardDto) {

@@ -28,9 +28,9 @@ export class PokemonCardsController {
     return this.pokemonCardsService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.pokemonCardsService.findOne(id);
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.pokemonCardsService.findOne(term);
   }
 
   @Patch(':id')

@@ -38,4 +38,9 @@ export class CreatePokemonCardDto {
   @IsString({ each: true })
   @IsArray()
   resistance: string[];
+
+  @IsString({ each: true })
+  @IsArray()
+  @IsOptional()
+  tags: string[];
 }

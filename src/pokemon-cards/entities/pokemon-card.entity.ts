@@ -45,4 +45,10 @@ export class PokemonCard {
     default: [],
   })
   resistance: string[];
+
+  @Column('text', {
+    array: true,
+    default: [],
+  })
+  tags: string[];
 }

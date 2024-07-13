@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { PokemonCard } from './pokemon-card.entity';
 
 @Entity()
 export class ImagesPokemonCard {
@@ -7,4 +8,7 @@ export class ImagesPokemonCard {
 
   @Column('text')
   url: string;
+
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.images)
+  pokemonCard: PokemonCard;
 }

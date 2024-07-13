@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { ImagesPokemonCard } from './images-pokemon-card.entity';
 
 @Entity()
 export class PokemonCard {
@@ -51,4 +52,11 @@ export class PokemonCard {
     default: [],
   })
   tags: string[];
+
+  @OneToMany(
+    () => ImagesPokemonCard,
+    (imagesPokemonCard) => imagesPokemonCard.pokemonCard,
+    { cascade: true },
+  )
+  images: ImagesPokemonCard;
 }

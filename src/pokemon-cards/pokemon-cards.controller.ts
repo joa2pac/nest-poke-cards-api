@@ -30,7 +30,7 @@ export class PokemonCardsController {
 
   @Get(':term')
   findOne(@Param('term') term: string) {
-    return this.pokemonCardsService.findOne(term);
+    return this.pokemonCardsService.findOnePlain(term);
   }
 
   @Patch(':id')

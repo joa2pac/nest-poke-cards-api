@@ -51,13 +51,21 @@ export class PokemonCardsService {
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { limit = 5, offset = 0 } = paginationDto;
 
-    return this.pokemonCardRepository.find({
+    const pokemonCards = await this.pokemonCardRepository.find({
       take: limit,
       skip: offset,
+      relations: {
+        images: true,
+      },
     });
+
+    return pokemonCards.map(({ images, ...rest }) => ({
+      ...rest,
+      images: images.map((img) => img.url),
+    }));
   }
 
   async findOne(term: string) {
@@ -66,17 +74,27 @@ export class PokemonCardsService {
     if (isUUID(term)) {
       pokemonCard = await this.pokemonCardRepository.findOneBy({ id: term });
     } else {
-      const queryBuilder = this.pokemonCardRepository.createQueryBuilder();
+      const queryBuilder =
+        this.pokemonCardRepository.createQueryBuilder('pokeCard');
       pokemonCard = await queryBuilder
         .where('UPPER(name) =:name', {
           name: term.toUpperCase(),
         })
+        .leftJoinAndSelect('pokeCard.images', 'pokeCardImages')
         .getOne();
     }
 
     if (!pokemonCard)
       throw new NotFoundException(`The card wit id ${term} not found`);
     return pokemonCard;
+  }
+
+  async findOnePlain(term: string) {
+    const { images = [], ...rest } = await this.findOne(term);
+    return {
+      ...rest,
+      images: images.map((image) => image.url),
+    };
   }
 
   async update(id: string, updatePokemonCardDto: UpdatePokemonCardDto) {

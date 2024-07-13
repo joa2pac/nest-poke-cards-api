@@ -56,7 +56,7 @@ export class PokemonCard {
   @OneToMany(
     () => ImagesPokemonCard,
     (imagesPokemonCard) => imagesPokemonCard.pokemonCard,
-    { cascade: true },
+    { cascade: true, eager: true },
   )
   images: ImagesPokemonCard[];
 }

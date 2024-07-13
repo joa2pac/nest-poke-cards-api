@@ -14,6 +14,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PokemonCard } from './entities/pokemon-card.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ImagesPokemonCard } from './entities';
+import { Attacks } from './entities/attacks-pokemon-card.entity';
 
 @Injectable()
 export class PokemonCardsService {
@@ -29,6 +30,9 @@ export class PokemonCardsService {
 
     @InjectRepository(ImagesPokemonCard)
     private readonly imagePokemonCardRepository: Repository<ImagesPokemonCard>,
+
+    @InjectRepository(Attacks)
+    private readonly attacksPokemonCardRepository: Repository<Attacks>,
   ) {}
 
   async create(createPokemonCardDto: CreatePokemonCardDto) {
@@ -36,16 +40,21 @@ export class PokemonCardsService {
       createPokemonCardDto.name,
     );
     try {
-      const { images = [], ...pokemonCardRest } = createPokemonCardDto;
+      const { images = [], attacks, ...pokemonCardRest } = createPokemonCardDto;
 
       const pokemonCard = this.pokemonCardRepository.create({
         ...pokemonCardRest,
         images: images.map((image) =>
           this.imagePokemonCardRepository.create({ url: image }),
         ),
+        attacks: attacks.map((attack) =>
+          this.attacksPokemonCardRepository.create({
+            ...attack,
+          }),
+        ),
       });
       await this.pokemonCardRepository.save(pokemonCard);
-      return { ...pokemonCard, images };
+      return { ...pokemonCard, images, attacks };
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -102,6 +111,7 @@ export class PokemonCardsService {
       id: id,
       ...updatePokemonCardDto,
       images: [],
+      attacks: [],
     });
 
     if (!pokemonCard)

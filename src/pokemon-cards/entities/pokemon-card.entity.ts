@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ImagesPokemonCard } from './images-pokemon-card.entity';
+import { Attacks } from './attacks-pokemon-card.entity';
 
 @Entity()
 export class PokemonCard {
@@ -59,4 +60,11 @@ export class PokemonCard {
     { cascade: true, eager: true },
   )
   images: ImagesPokemonCard[];
+
+  @OneToMany(
+    () => Attacks,
+    (attacksPokemonCard) => attacksPokemonCard.pokemonCard,
+    { cascade: true, eager: true },
+  )
+  attacks: Attacks[];
 }

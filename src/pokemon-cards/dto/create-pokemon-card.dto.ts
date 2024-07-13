@@ -5,6 +5,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { CreateAttackDto } from './create-attack.dto';
 
 export class CreatePokemonCardDto {
   @IsString()
@@ -47,4 +48,7 @@ export class CreatePokemonCardDto {
   @IsString({ each: true })
   @IsArray()
   images: string[];
+
+  @IsArray()
+  attacks: CreateAttackDto[];
 }

@@ -58,5 +58,5 @@ export class PokemonCard {
     (imagesPokemonCard) => imagesPokemonCard.pokemonCard,
     { cascade: true },
   )
-  images: ImagesPokemonCard;
+  images: ImagesPokemonCard[];
 }

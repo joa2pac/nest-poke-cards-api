@@ -43,4 +43,8 @@ export class CreatePokemonCardDto {
   @IsArray()
   @IsOptional()
   tags: string[];
+
+  @IsString({ each: true })
+  @IsArray()
+  images: string[];
 }

@@ -13,6 +13,7 @@ import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PokemonCard } from './entities/pokemon-card.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ImagesPokemonCard } from './entities';
 
 @Injectable()
 export class PokemonCardsService {
@@ -24,7 +25,10 @@ export class PokemonCardsService {
 
   constructor(
     @InjectRepository(PokemonCard)
-    private readonly pokeCardRepository: Repository<PokemonCard>,
+    private readonly pokemonCardRepository: Repository<PokemonCard>,
+
+    @InjectRepository(ImagesPokemonCard)
+    private readonly imagePokemonCardRepository: Repository<ImagesPokemonCard>,
   ) {}
 
   async create(createPokemonCardDto: CreatePokemonCardDto) {
@@ -32,9 +36,16 @@ export class PokemonCardsService {
       createPokemonCardDto.name,
     );
     try {
-      const pokemonCard = this.pokeCardRepository.create(createPokemonCardDto);
-      await this.pokeCardRepository.save(pokemonCard);
-      return pokemonCard;
+      const { images = [], ...pokemonCardRest } = createPokemonCardDto;
+
+      const pokemonCard = this.pokemonCardRepository.create({
+        ...pokemonCardRest,
+        images: images.map((image) =>
+          this.imagePokemonCardRepository.create({ url: image }),
+        ),
+      });
+      await this.pokemonCardRepository.save(pokemonCard);
+      return { ...pokemonCard, images };
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -43,7 +54,7 @@ export class PokemonCardsService {
   findAll(paginationDto: PaginationDto) {
     const { limit = 5, offset = 0 } = paginationDto;
 
-    return this.pokeCardRepository.find({
+    return this.pokemonCardRepository.find({
       take: limit,
       skip: offset,
     });
@@ -53,9 +64,9 @@ export class PokemonCardsService {
     let pokemonCard: PokemonCard;
 
     if (isUUID(term)) {
-      pokemonCard = await this.pokeCardRepository.findOneBy({ id: term });
+      pokemonCard = await this.pokemonCardRepository.findOneBy({ id: term });
     } else {
-      const queryBuilder = this.pokeCardRepository.createQueryBuilder();
+      const queryBuilder = this.pokemonCardRepository.createQueryBuilder();
       pokemonCard = await queryBuilder
         .where('UPPER(name) =:name', {
           name: term.toUpperCase(),
@@ -69,15 +80,16 @@ export class PokemonCardsService {
   }
 
   async update(id: string, updatePokemonCardDto: UpdatePokemonCardDto) {
-    const pokemonCard = await this.pokeCardRepository.preload({
+    const pokemonCard = await this.pokemonCardRepository.preload({
       id: id,
       ...updatePokemonCardDto,
+      images: [],
     });
 
     if (!pokemonCard)
       throw new NotFoundException(`Pokemon Card with id: ${id} not found`);
     try {
-      await this.pokeCardRepository.save(pokemonCard);
+      await this.pokemonCardRepository.save(pokemonCard);
       return pokemonCard;
     } catch (error) {
       this.handleDBExceptions(error);
@@ -86,7 +98,7 @@ export class PokemonCardsService {
 
   async remove(id: string) {
     const pokeCard = this.findOne(id);
-    await this.pokeCardRepository.delete({ id });
+    await this.pokemonCardRepository.delete({ id });
   }
 
   private handleDBExceptions(error: any) {

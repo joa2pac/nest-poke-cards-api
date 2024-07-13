@@ -68,12 +68,14 @@ export class PokemonCardsService {
       skip: offset,
       relations: {
         images: true,
+        attacks: true,
       },
     });
 
-    return pokemonCards.map(({ images, ...rest }) => ({
+    return pokemonCards.map(({ images, attacks, ...rest }) => ({
       ...rest,
       images: images.map((img) => img.url),
+      attacks: attacks.map(({ id, ...attack }) => attack),
     }));
   }
 
@@ -90,6 +92,7 @@ export class PokemonCardsService {
           name: term.toUpperCase(),
         })
         .leftJoinAndSelect('pokeCard.images', 'pokeCardImages')
+        .leftJoinAndSelect('pokeCard.attacks', 'pokeCardAttacks')
         .getOne();
     }
 
@@ -99,10 +102,11 @@ export class PokemonCardsService {
   }
 
   async findOnePlain(term: string) {
-    const { images = [], ...rest } = await this.findOne(term);
+    const { images = [], attacks = [], ...rest } = await this.findOne(term);
     return {
       ...rest,
       images: images.map((image) => image.url),
+      attacks: attacks.map(({ id, ...attack }) => attack),
     };
   }
 

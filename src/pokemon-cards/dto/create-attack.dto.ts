@@ -3,7 +3,7 @@ import { IsArray, IsString, ArrayMinSize, IsNotEmpty } from 'class-validator';
 export class CreateAttackDto {
   @IsString()
   @IsNotEmpty()
-  name: string;
+  attackName: string;
 
   @IsArray()
   @ArrayMinSize(1)

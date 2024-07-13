@@ -7,7 +7,7 @@ export class Attacks {
   id: number;
 
   @Column('text')
-  name: string;
+  attackName: string;
 
   @Column('text')
   cost: string;

@@ -5,7 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { validate as isUUID } from 'uuid';
 
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
@@ -33,6 +33,8 @@ export class PokemonCardsService {
 
     @InjectRepository(Attacks)
     private readonly attacksPokemonCardRepository: Repository<Attacks>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createPokemonCardDto: CreatePokemonCardDto) {
@@ -111,19 +113,49 @@ export class PokemonCardsService {
   }
 
   async update(id: string, updatePokemonCardDto: UpdatePokemonCardDto) {
+    const { images, attacks, ...toUpdate } = updatePokemonCardDto;
+
     const pokemonCard = await this.pokemonCardRepository.preload({
-      id: id,
-      ...updatePokemonCardDto,
-      images: [],
-      attacks: [],
+      id,
+      ...toUpdate,
     });
 
     if (!pokemonCard)
       throw new NotFoundException(`Pokemon Card with id: ${id} not found`);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      await this.pokemonCardRepository.save(pokemonCard);
-      return pokemonCard;
+      if (images) {
+        await queryRunner.manager.delete(ImagesPokemonCard, {
+          pokemonCard: { id },
+        });
+        pokemonCard.images = images.map((image) =>
+          this.imagePokemonCardRepository.create({ url: image }),
+        );
+      }
+      if (attacks) {
+        await queryRunner.manager.delete(Attacks, {
+          pokemonCard: { id },
+        });
+        pokemonCard.attacks = attacks.map((attack) =>
+          this.attacksPokemonCardRepository.create({
+            ...attack,
+          }),
+        );
+      }
+
+      await queryRunner.manager.save(pokemonCard);
+
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      return this.findOnePlain(id);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
       this.handleDBExceptions(error);
     }
   }

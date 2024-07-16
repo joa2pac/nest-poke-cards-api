@@ -25,22 +25,6 @@ export class PokemonCard {
   })
   hp: number;
 
-  @Column('float', {
-    default: 1,
-  })
-  attack: number;
-
-  @Column('float', {
-    default: 1,
-  })
-  defense: number;
-
-  @Column('text', {
-    array: true,
-    default: [],
-  })
-  tags: string[];
-
   @OneToMany(
     () => ImagesPokemonCard,
     (imagesPokemonCard) => imagesPokemonCard.pokemonCard,

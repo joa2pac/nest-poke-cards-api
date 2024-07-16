@@ -1,7 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
-import { ImagesPokemonCard } from './images-pokemon-card.entity';
-import { Attacks } from './attacks-pokemon-card.entity';
+import { ImagesPokemonCard, Resistance, Attacks, Weakness } from '../entities';
 
 @Entity()
 export class PokemonCard {
@@ -46,12 +44,6 @@ export class PokemonCard {
     array: true,
     default: [],
   })
-  resistance: string[];
-
-  @Column('text', {
-    array: true,
-    default: [],
-  })
   tags: string[];
 
   @OneToMany(
@@ -67,4 +59,18 @@ export class PokemonCard {
     { cascade: true, eager: true },
   )
   attacks: Attacks[];
+
+  @OneToMany(
+    () => Resistance,
+    (resistancesPokemonCard) => resistancesPokemonCard.pokemonCard,
+    { cascade: true, eager: true },
+  )
+  resistances: Resistance[];
+
+  @OneToMany(
+    () => Weakness,
+    (weaknessPokemonCard) => weaknessPokemonCard.pokemonCard,
+    { cascade: true, eager: true },
+  )
+  weaknesses: Weakness[];
 }

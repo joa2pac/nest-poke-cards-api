@@ -18,6 +18,8 @@ export class Attacks {
   @Column('text')
   text: string;
 
-  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.attacks)
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.attacks, {
+    onDelete: 'CASCADE',
+  })
   pokemonCard: PokemonCard;
 }

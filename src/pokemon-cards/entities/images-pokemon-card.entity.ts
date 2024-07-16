@@ -9,6 +9,8 @@ export class ImagesPokemonCard {
   @Column('text')
   url: string;
 
-  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.images)
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.images, {
+    onDelete: 'CASCADE',
+  })
   pokemonCard: PokemonCard;
 }

@@ -120,8 +120,7 @@ export class PokemonCardsService {
         .getOne();
     }
 
-    if (!pokemonCard)
-      throw new NotFoundException(`The card wit id ${term} not found`);
+    if (!pokemonCard) this.notFoundPokemonCardById(term);
     return pokemonCard;
   }
 
@@ -142,8 +141,7 @@ export class PokemonCardsService {
       ...toUpdate,
     });
 
-    if (!pokemonCard)
-      throw new NotFoundException(`Pokemon Card with id: ${id} not found`);
+    if (!pokemonCard) this.notFoundPokemonCardById(id);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -187,6 +185,16 @@ export class PokemonCardsService {
     await this.pokemonCardRepository.delete({ id });
   }
 
+  async deleteAllPokemonCards() {
+    const query = this.pokemonCardRepository.createQueryBuilder('pokemonCard');
+
+    try {
+      return await query.delete().where({}).execute();
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
   private handleDBExceptions(error: any) {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
@@ -194,5 +202,9 @@ export class PokemonCardsService {
     throw new InternalServerErrorException(
       'Unexpected error, checkk server logs',
     );
+  }
+
+  private notFoundPokemonCardById(term: string) {
+    throw new NotFoundException(`Pokemon Card with id: ${term} not found`);
   }
 }

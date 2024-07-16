@@ -12,6 +12,8 @@ export class Weakness {
   @Column('text')
   value: string;
 
-  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.weakness)
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.weakness, {
+    onDelete: 'CASCADE',
+  })
   pokemonCard: PokemonCard;
 }

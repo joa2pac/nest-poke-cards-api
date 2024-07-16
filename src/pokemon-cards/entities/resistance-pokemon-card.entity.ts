@@ -12,6 +12,8 @@ export class Resistance {
   @Column('text')
   value: string;
 
-  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.resistances)
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.resistances, {
+    onDelete: 'CASCADE',
+  })
   pokemonCard: PokemonCard;
 }

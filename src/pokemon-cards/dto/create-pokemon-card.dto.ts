@@ -5,7 +5,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { CreateAttackDto } from './create-attack.dto';
+import { CreateAttackDto, CreateWeaknessDto, CreateResistancesDto } from './';
 
 export class CreatePokemonCardDto {
   @IsString()
@@ -24,18 +24,6 @@ export class CreatePokemonCardDto {
   @IsPositive()
   hp?: number;
 
-  @IsOptional()
-  @IsPositive()
-  attack?: number;
-
-  @IsOptional()
-  @IsPositive()
-  defense?: number;
-
-  @IsString({ each: true })
-  @IsArray()
-  weakness: string[];
-
   @IsString({ each: true })
   @IsArray()
   resistance: string[];
@@ -51,4 +39,10 @@ export class CreatePokemonCardDto {
 
   @IsArray()
   attacks: CreateAttackDto[];
+
+  @IsArray()
+  weakness: CreateWeaknessDto[];
+
+  @IsArray()
+  resistances: CreateResistancesDto[];
 }

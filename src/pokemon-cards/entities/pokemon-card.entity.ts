@@ -37,11 +37,6 @@ export class PokemonCard {
 
   @Column('text', {
     array: true,
-  })
-  weakness: string[];
-
-  @Column('text', {
-    array: true,
     default: [],
   })
   tags: string[];
@@ -72,5 +67,5 @@ export class PokemonCard {
     (weaknessPokemonCard) => weaknessPokemonCard.pokemonCard,
     { cascade: true, eager: true },
   )
-  weaknesses: Weakness[];
+  weakness: Weakness[];
 }

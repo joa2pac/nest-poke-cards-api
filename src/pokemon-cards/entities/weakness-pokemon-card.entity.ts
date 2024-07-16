@@ -12,6 +12,6 @@ export class Weakness {
   @Column('text')
   value: string;
 
-  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.weaknesses)
+  @ManyToOne(() => PokemonCard, (pokemonCard) => pokemonCard.weakness)
   pokemonCard: PokemonCard;
 }

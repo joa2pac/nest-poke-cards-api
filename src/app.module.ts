@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PokemonCardsModule } from './pokemon-cards/pokemon-cards.module';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SeedModule } from './seed/seed.module';
     PokemonCardsModule,
     CommonModule,
     SeedModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],

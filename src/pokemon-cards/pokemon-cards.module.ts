@@ -24,5 +24,6 @@ import {
       Weakness,
     ]),
   ],
+  exports: [PokemonCardsService, TypeOrmModule],
 })
 export class PokemonCardsModule {}

@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { ImagesPokemonCard, Resistance, Attacks, Weakness } from '../entities';
 
-@Entity()
+@Entity({ name: 'pokemon_cards' })
 export class PokemonCard {
   @PrimaryGeneratedColumn('uuid')
   id: string;

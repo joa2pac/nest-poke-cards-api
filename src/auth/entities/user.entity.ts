@@ -3,6 +3,7 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -24,9 +25,7 @@ export class User {
   @Column('text')
   fullName: string;
 
-  @Column('bool', {
-    default: true,
-  })
+  @Column('bool', { default: true })
   isActive: boolean;
 
   @Column('text', {

@@ -2,22 +2,21 @@ import {
   BadRequestException,
   Injectable,
   InternalServerErrorException,
-  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 
-import { CreateUserDto, LoginUserDto } from './dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { LoginUserDto } from './dto';
+import { JwtPayload } from './interfaces/jwt.interface';
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger('PokemonCardsService');
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -25,9 +24,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDeto: CreateUserDto) {
     try {
-      const { password, ...userData } = createUserDto;
+      const { password, ...userData } = createUserDeto;
 
       const user = this.userRepository.create({
         ...userData,
@@ -35,14 +34,15 @@ export class AuthService {
       });
 
       await this.userRepository.save(user);
+
       delete user.password;
 
       return {
         ...user,
-        token: this.getJwtToken({ email: user.email }),
+        token: this.getJwtToken({ id: user.id }),
       };
     } catch (error) {
-      this.handleDBExceptions(error);
+      this.handleDBerrors(error);
     }
   }
 
@@ -51,7 +51,7 @@ export class AuthService {
 
     const user = await this.userRepository.findOne({
       where: { email },
-      select: { password: true, email: true },
+      select: { id: true, password: true, email: true },
     });
 
     if (!user) throw new UnauthorizedException('Not valid credentials(email)');
@@ -61,7 +61,14 @@ export class AuthService {
 
     return {
       ...user,
-      token: this.getJwtToken({ email: user.email }),
+      token: this.getJwtToken({ id: user.id }),
+    };
+  }
+
+  async checktAuthStatus(user: User) {
+    return {
+      ...user,
+      token: this.getJwtToken({ id: user.id }),
     };
   }
 
@@ -70,12 +77,13 @@ export class AuthService {
     return token;
   }
 
-  private handleDBExceptions(error: any): never {
-    if (error.code === '23505') throw new BadRequestException(error.detail);
+  private handleDBerrors(error: any): never {
+    if (error.code === '23505') {
+      throw new BadRequestException(error.detail);
+    }
 
-    this.logger.error(error);
-    throw new InternalServerErrorException(
-      'Unexpected error, checkk server logs',
-    );
+    console.log(error);
+
+    throw new InternalServerErrorException('Please check server logs');
   }
 }

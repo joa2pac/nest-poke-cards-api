@@ -1,3 +1,4 @@
+import { PokemonCard } from '../../pokemon-cards/entities';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -33,6 +34,9 @@ export class User {
     default: ['user'],
   })
   roles: string[];
+
+  @OneToMany(() => PokemonCard, (pokemonCard) => pokemonCard.user)
+  pokemonCard: PokemonCard;
 
   @BeforeInsert()
   checkFieldsBeforeInsert() {

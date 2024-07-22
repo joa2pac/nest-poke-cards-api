@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
 import { ImagesPokemonCard, Resistance, Attacks, Weakness } from '../entities';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity({ name: 'pokemon_cards' })
 export class PokemonCard {
@@ -52,4 +59,7 @@ export class PokemonCard {
     { cascade: true, eager: true },
   )
   weakness: Weakness[];
+
+  @ManyToOne(() => User, (user) => user.pokemonCard, { eager: true })
+  user: User;
 }

@@ -15,6 +15,7 @@ import { PokemonCard } from './entities/pokemon-card.entity';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { ImagesPokemonCard, Resistance, Weakness } from './entities';
 import { Attacks } from './entities/attacks-pokemon-card.entity';
+import { User } from 'src/auth/entities/user.entity';
 
 @Injectable()
 export class PokemonCardsService {
@@ -43,7 +44,7 @@ export class PokemonCardsService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(createPokemonCardDto: CreatePokemonCardDto) {
+  async create(createPokemonCardDto: CreatePokemonCardDto, user: User) {
     createPokemonCardDto.name = this.capitalizeFirstLetter(
       createPokemonCardDto.name,
     );
@@ -58,6 +59,7 @@ export class PokemonCardsService {
 
       const pokemonCard = this.pokemonCardRepository.create({
         ...pokemonCardRest,
+        user,
         images: images.map((image) =>
           this.imagePokemonCardRepository.create({ url: image }),
         ),
@@ -133,7 +135,11 @@ export class PokemonCardsService {
     };
   }
 
-  async update(id: string, updatePokemonCardDto: UpdatePokemonCardDto) {
+  async update(
+    id: string,
+    updatePokemonCardDto: UpdatePokemonCardDto,
+    user: User,
+  ) {
     const { images, attacks, ...toUpdate } = updatePokemonCardDto;
 
     const pokemonCard = await this.pokemonCardRepository.preload({
@@ -166,6 +172,8 @@ export class PokemonCardsService {
           }),
         );
       }
+
+      pokemonCard.user = user;
 
       await queryRunner.manager.save(pokemonCard);
 

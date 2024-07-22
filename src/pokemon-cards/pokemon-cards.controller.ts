@@ -13,8 +13,9 @@ import { PokemonCardsService } from './pokemon-cards.service';
 import { CreatePokemonCardDto } from './dto/create-pokemon-card.dto';
 import { UpdatePokemonCardDto } from './dto/update-pokemon-card.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { Auth } from 'src/auth/decorators';
+import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
+import { User } from 'src/auth/entities/user.entity';
 
 @Controller('pokemon-card')
 @Auth()
@@ -23,8 +24,11 @@ export class PokemonCardsController {
 
   @Post()
   @Auth(ValidRoles.admin, ValidRoles.superUser)
-  create(@Body() createPokemonCardDto: CreatePokemonCardDto) {
-    return this.pokemonCardsService.create(createPokemonCardDto);
+  create(
+    @Body() createPokemonCardDto: CreatePokemonCardDto,
+    @GetUser() user: User,
+  ) {
+    return this.pokemonCardsService.create(createPokemonCardDto, user);
   }
 
   @Get()
@@ -42,8 +46,9 @@ export class PokemonCardsController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePokemonCardDto: UpdatePokemonCardDto,
+    @GetUser() user: User,
   ) {
-    return this.pokemonCardsService.update(id, updatePokemonCardDto);
+    return this.pokemonCardsService.update(id, updatePokemonCardDto, user);
   }
 
   @Delete(':id')

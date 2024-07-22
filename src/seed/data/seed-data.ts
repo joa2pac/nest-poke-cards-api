@@ -1,12 +1,43 @@
 import { CreatePokemonCardDto } from 'src/pokemon-cards/dto/create-pokemon-card.dto';
 
+import * as bcrypt from 'bcrypt';
+
 interface SeedPokemonCard extends CreatePokemonCardDto {}
 
+interface SeedUser {
+  email: string;
+  fullName: string;
+  password: string;
+  roles: string[];
+}
+
 interface SeedData {
+  users: SeedUser[];
   pokemonCards: SeedPokemonCard[];
 }
 
 export const initialData: SeedData = {
+  users: [
+    {
+      email: 'test1@google.com',
+      fullName: 'Test One',
+      password: bcrypt.hashSync('Joa123', 10),
+      roles: ['admin'],
+    },
+    {
+      email: 'test2@google.com',
+      fullName: 'Test Two',
+      password: bcrypt.hashSync('Joa123', 10),
+      roles: ['user'],
+    },
+    {
+      email: 'test3@google.com',
+      fullName: 'Test three',
+      password: bcrypt.hashSync('Joa123', 10),
+      roles: ['super-user'],
+    },
+  ],
+
   pokemonCards: [
     {
       name: "Blaine's Charizard",

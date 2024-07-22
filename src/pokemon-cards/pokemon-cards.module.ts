@@ -11,6 +11,7 @@ import {
   Attacks,
   Weakness,
 } from './entities';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   controllers: [PokemonCardsController],
@@ -23,6 +24,7 @@ import {
       Resistance,
       Weakness,
     ]),
+    AuthModule,
   ],
   exports: [PokemonCardsService, TypeOrmModule],
 })
